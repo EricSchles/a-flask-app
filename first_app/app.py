@@ -1,6 +1,8 @@
 #!/usr/bin/python
 
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect, url_for
+from flask_wtf import form
+from wtforms.fields import RadioField, SubmitField
 
 app = Flask(__name__)
 questions = ['Is it compiled?', 'Does it run on a VM?']
