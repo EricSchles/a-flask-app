@@ -5,8 +5,13 @@ from flask_wtf import form
 from wtforms.fields import RadioField, SubmitField
 
 app = Flask(__name__)
+app.config['SECRET_KEY'] = 'secret!'
 questions = ['Is it compiled?', 'Does it run on a VM?']
 guesses = ['Python', 'Java', 'C++']
+
+class YesNoQuestionForm(Form):
+	answer = RadioField('Your answer', choices=[('yes', 'Yes'), ('no', 'No')])
+	submit = SubmitField('Submit')
 
 @app.route('/')
 def index():
@@ -14,6 +19,7 @@ def index():
  
 @app.route('/question/<int:id>', methods=['GET', 'POST'])
 def question(id):
+	form = YesNoQuestionForm()
 	if request.method=='POST':
 		if request.form['answer'] == 'yes':
 			return redirect(url_for('question', id=id+1))
