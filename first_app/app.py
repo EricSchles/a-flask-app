@@ -20,14 +20,18 @@ def index():
 @app.route('/question/<int:id>', methods=['GET', 'POST'])
 def question(id):
 	form = YesNoQuestionForm()
-	if request.method=='POST':
-		if request.form['answer'] == 'yes':
+	if form.validate_on_submit():
+		if form.answer.data == 'yes':
 			return redirect(url_for('question', id=id+1))
+		else:
+			return redirect(url_for('question', id=id))
 	return render_template('question.html', question=questions[id], form=form)
 
 @app.route('/guess/<int:id>')
 def guess(id):
 	return render_template('guess.html', guess=guesses[id])
+
+
 if __name__ == '__main__':
 	app.run(debug=True)
 	#run on development web server, use this
