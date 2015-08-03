@@ -1,4 +1,4 @@
-class GuessError(RunTimeError):
+class GuessError(RuntimeError):
 	"""Custom exception for game errors."""
 	pass
 
@@ -7,7 +7,7 @@ class Guess:
 		self.data = [{'guess': initial_guess}]
 
 	def expand(self, old_guess, new_guess, question, answer_for_new):
-		old_guess_id = self.get_guess_id(old_guess)
+		old_guess_id = self._get_guess_id(old_guess)
 		if old_guess_id is None:
 			raise GuessError(old_guess + ' is unknown.')
 		if self._get_guess_id(new_guess) is not None:
@@ -36,7 +36,7 @@ class Guess:
 			raise GuessError('Not a question')
 		return new_id
 	
-	def get_guess(self, guess):
+	def _get_guess_id(self, guess):
 		for i in range(len(self.data)):
 			if self.data[i].get('guess') == guess:
 				return i
