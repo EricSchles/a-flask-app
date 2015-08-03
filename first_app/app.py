@@ -32,6 +32,11 @@ def question(id):
 
 @app.route('/guess/<int:id>')
 def guess(id):
+	form = YesNoQuestionForm()
+	if form.validate_on_submit():
+		if form.answer.data == 'yes':
+			return redirect(url_for('index'))
+		return redirect(url_for('learn', id=id))
 	return render_template('guess.html', guess=game.get_guess(id))
 
 
