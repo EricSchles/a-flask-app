@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 from flask import Flask, render_template, request, redirect, url_for
-from flask_wtf import form
+from flask_wtf import Form
 from wtforms.fields import RadioField, SubmitField
 
 app = Flask(__name__)
@@ -23,7 +23,7 @@ def question(id):
 	if request.method=='POST':
 		if request.form['answer'] == 'yes':
 			return redirect(url_for('question', id=id+1))
-	return render_template('question.html', question=questions[id])
+	return render_template('question.html', question=questions[id], form=form)
 
 @app.route('/guess/<int:id>')
 def guess(id):
