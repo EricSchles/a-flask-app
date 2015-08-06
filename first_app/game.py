@@ -7,6 +7,21 @@ class Guess:
 		self.data = [{'guess': initial_guess}]
 
 	def expand(self, old_guess, new_guess, question, answer_for_new):
+		""" Add a new guess to the game.
+
+		Parameters:
+			old_guess(str): The existing guess being expanded.
+			new_guess(str): The new guess added to the game.
+			question(str): A question to separate old_guess from new_guess
+			answer_for_new(bool): The answer to the question for new_guess.
+
+		Raises:
+			GuessError: Input is invalid.
+
+		Returns:
+			None
+		"""
+
 		old_guess_id = self._get_guess_id(old_guess)
 		if old_guess_id is None:
 			raise GuessError(old_guess + ' is unknown.')
@@ -28,6 +43,7 @@ class Guess:
 		return self.data[id].get('guess')
 
 	def answer_question(self, answer, id=0):
+		new_id = None
 		if answer:
 			new_id = self.data[id].get('yes')
 		else:
