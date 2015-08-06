@@ -19,7 +19,7 @@ class YesNoQuestionForm(Form):
 class LearnForm(Form):
 	language = StringField('What language did you pick?', validators=[Required()])
 	question = StringField('What is a question that differentiates your language from mine?', validators=[Required()])
-	answer = RadioField('What is the answer for your language?', choices=[('yes','Yes'), ('no','No')], validators=[Required()])
+	answer = RadioField('What is the answer for your language?', choices=[('yes','Yes'), ('no','No')])
 	submit = SubmitField('Submit')
 
 @app.route('/')
@@ -28,7 +28,7 @@ def index():
 	return render_template('index.html')
  
 @app.route('/question', methods=['GET', 'POST'])
-def question(id):
+def question():
 	if 'question' not in session:
 		# if we have no question in the session we go to the start page
 		return redirect(url_for('index'))
@@ -42,24 +42,25 @@ def question(id):
 
 	form = YesNoQuestionForm()
 	if form.validate_on_submit():
+		new_id = game.answer_question(form.answer.data == 'yes', id)
 		# the user answered the question, advance
-		session['question'] = game.answer_question
+		#session['question'] = game.answer_question
 		return redirect(url_for('question'))
-
+	
 	#present the question to the user
 	return render_template('question.html', question=question, form=form)
 
-@app.route('/guess/<int:id>', methods=['GET','POST'])
-def guess(id):
+@app.route('/guess', methods=['GET','POST'])
+def guess():
 	if question not in session:
 		#if we have no question in the session we go to the start page
-		return redirect( url_for('index') )
+		return redirect(url_for('index'))
 
 	id = session['question']
 	guess = game.get_guess(id)
 	if guess is None:
 		#don't have a guess, we shouldn't be here
-		return redirect('index')
+		return redirect(url_for('index'))
 
 	form = YesNoQuestionForm()
 	if form.validate_on_submit():
@@ -68,17 +69,16 @@ def guess(id):
 			return redirect(url_for('index'))
 
 		#ask the user to expand the game with a new question
-		return redirect(url_for('learn', id=id))
+		return redirect(url_for('learn'))
 
 	#present the guess to the user
-	return render_template('guess.html', guess=game.get_guess(id), form=form)
+	return render_template('guess.html', guess=guess, form=form)
 
-@app.route('/learn/<int:id>', methods=['GET','POST'])
-def learn(id):
+@app.route('/learn', methods=['GET','POST'])
+def learn():
 	if 'question' not in session:
 		#if we have no question in the session we go to the start page
-		return redirect( url_for('index'))
-
+		return redirect( url_for('index') )
 	id = session['question']
 	guess = game.get_guess(id)
 	if guess is None:
@@ -90,6 +90,10 @@ def learn(id):
 		return redirect(url_for('index'))
 	return render_template('learn.html', guess=guess, form=form)
 
+@app.errorhandler(GuessError)
+@app.errorhandler(404)
+def runtime_error(e):
+	return render_template('error.html', error=str(e))
 
 if __name__ == '__main__':
 	#app.run(debug=True)
